@@ -1,0 +1,92 @@
+class BookController {
+    constructor(models) {
+        this.Book = models.Book;
+        this.Review = models.Review;
+    }
+
+    async getBooks(req, res) {
+        try {
+            const filters = {
+                search: req.query.search,
+                genre: req.query.genre,
+                rating: req.query.rating,
+                sortBy: req.query.sortBy,
+                limit: parseInt(req.query.limit) || 20,
+                skip: parseInt(req.query.skip) || 0
+            };
+            const books = await this.Book.findAll(filters);
+            res.send(books);
+        } catch (error) {
+            res.status(500).send({ message: 'Error fetching books', error: error.message });
+        }
+    }
+
+    async getBookDetails(req, res) {
+        try {
+            const id = req.params.id;
+            const userEmail = req.user?.email; // Populated if user is logged in (verifyToken)
+
+            const book = await this.Book.findById(id);
+            if (!book) return res.status(404).send({ message: 'Book not found' });
+
+            // Fetch all approved reviews
+            let reviews = await this.Review.findByBookId(id);
+
+            // Fetch user's own reviews if they exist (even if pending/rejected)
+            if (userEmail) {
+                const userReviews = await this.Review.collection.find({
+                    bookId: id,
+                    userEmail: userEmail,
+                    status: { $ne: 'approved' } // Avoid duplicates
+                }).toArray();
+                reviews = [...reviews, ...userReviews];
+            }
+
+            // Sanitization: Remove emails from others' reviews for privacy
+            const sanitizedReviews = reviews.map(r => {
+                const review = { ...r };
+                if (review.userEmail !== userEmail) {
+                    delete review.userEmail;
+                }
+                return review;
+            });
+
+            res.send({ ...book, reviews: sanitizedReviews });
+        } catch (error) {
+            res.status(500).send({ message: 'Error fetching book details', error: error.message });
+        }
+    }
+
+    async addBook(req, res) {
+        try {
+            const bookData = req.body;
+            const result = await this.Book.create(bookData);
+            res.status(201).send(result);
+        } catch (error) {
+            res.status(500).send({ message: 'Error adding book', error: error.message });
+        }
+    }
+
+    async updateBook(req, res) {
+        try {
+            const id = req.params.id;
+            const updateData = req.body;
+            const result = await this.Book.update(id, updateData);
+            res.send(result);
+        } catch (error) {
+            res.status(500).send({ message: 'Error updating book', error: error.message });
+        }
+    }
+
+    async deleteBook(req, res) {
+        try {
+            const id = req.params.id;
+            const result = await this.Book.delete(id);
+            res.send(result);
+        } catch (error) {
+            res.status(500).send({ message: 'Error deleting book', error: error.message });
+        }
+    }
+}
+
+module.exports = BookController;
