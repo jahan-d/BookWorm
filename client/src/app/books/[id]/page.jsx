@@ -8,6 +8,7 @@ import { Loader2, Star, BookOpen, Clock, Calendar, Check, Plus, Heart } from 'lu
 import { useAuth } from '@/context/AuthContext';
 import { format } from 'date-fns';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 export default function BookDetailsPage() {
     const { id } = useParams();

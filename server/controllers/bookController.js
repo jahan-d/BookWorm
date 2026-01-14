@@ -25,27 +25,40 @@ class BookController {
     async getBookDetails(req, res) {
         try {
             const id = req.params.id;
-            const userEmail = req.user?.email; // Populated if user is logged in (verifyToken)
+            const userEmail = req.user?.email;
 
             const book = await this.Book.findById(id);
             if (!book) return res.status(404).send({ message: 'Book not found' });
 
             // Fetch all approved reviews
-            let reviews = await this.Review.findByBookId(id);
+            let reviews = [];
+            try {
+                reviews = await this.Review.findByBookId(id);
+            } catch (err) {
+                console.error('Error fetching approved reviews:', err);
+            }
 
             // Fetch user's own reviews if they exist (even if pending/rejected)
+            // Use instance method if available, fallback to collection access
             if (userEmail) {
-                const userReviews = await this.Review.collection.find({
-                    bookId: id,
-                    userEmail: userEmail,
-                    status: { $ne: 'approved' } // Avoid duplicates
-                }).toArray();
-                reviews = [...reviews, ...userReviews];
+                try {
+                    const userReviews = await this.Review.collection.find({
+                        bookId: id,
+                        userEmail: userEmail,
+                        status: { $ne: 'approved' }
+                    }).toArray();
+                    reviews = [...reviews, ...userReviews];
+                } catch (err) {
+                    console.error('Error fetching user own reviews:', err);
+                }
             }
 
             // Sanitization: Remove emails from others' reviews for privacy
             const sanitizedReviews = reviews.map(r => {
                 const review = { ...r };
+                // Ensure review is not just the MongoDB ID if map is used on non-objects
+                if (typeof review !== 'object' || review === null) return review;
+
                 if (review.userEmail !== userEmail) {
                     delete review.userEmail;
                 }
@@ -54,6 +67,7 @@ class BookController {
 
             res.send({ ...book, reviews: sanitizedReviews });
         } catch (error) {
+            console.error('Fatal error in getBookDetails:', error);
             res.status(500).send({ message: 'Error fetching book details', error: error.message });
         }
     }

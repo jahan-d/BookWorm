@@ -48,7 +48,13 @@ class Book {
     }
 
     async findById(id) {
-        return await this.collection.findOne({ _id: new ObjectId(id) });
+        if (!id || typeof id !== 'string' || id.length !== 24) return null;
+        try {
+            return await this.collection.findOne({ _id: new ObjectId(id) });
+        } catch (err) {
+            console.error('Invalid ObjectId in findById:', id);
+            return null;
+        }
     }
 
     async update(id, updateData) {
