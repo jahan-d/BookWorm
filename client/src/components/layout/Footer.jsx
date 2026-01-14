@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen, Github, Twitter, Linkedin } from 'lucide-react';
+import { BookOpen, Github, X, Linkedin } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Footer() {
@@ -39,7 +39,7 @@ export default function Footer() {
                     <div>
                         <h4 className="font-bold mb-4">Connect</h4>
                         <div className="flex space-x-4">
-                            <SocialLink href="#" icon={Twitter} />
+                            <SocialLink href="#" icon={X} />
                             <SocialLink href="#" icon={Github} />
                             <SocialLink href="#" icon={Linkedin} />
                         </div>

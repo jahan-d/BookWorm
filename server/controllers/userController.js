@@ -136,7 +136,7 @@ class UserController {
                 booksReadThisYear: totalBooksRead,
                 totalPagesRead,
                 averageRatingGiven,
-                annualGoal: user.readingGoal || 0,
+                readingGoal: user.readingGoal || 0,
                 goalProgress: totalBooksRead
             });
         } catch (error) {
