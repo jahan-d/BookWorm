@@ -55,7 +55,9 @@ export default function TutorialsPage() {
                                     <iframe
                                         width="100%"
                                         height="100%"
-                                        src={video.videoUrl.includes('embed') ? video.videoUrl : `https://www.youtube.com/embed/${getYouTubeID(video.videoUrl)}`}
+                                        src={video.videoUrl.includes('embed')
+                                            ? video.videoUrl.replace('youtube.com', 'youtube-nocookie.com')
+                                            : `https://www.youtube-nocookie.com/embed/${getYouTubeID(video.videoUrl)}`}
                                         title={video.title}
                                         frameBorder="0"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
