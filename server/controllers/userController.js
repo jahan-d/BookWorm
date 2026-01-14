@@ -99,9 +99,32 @@ class UserController {
 
     async getLibrary(req, res) {
         try {
-            const email = req.user.email;
-            const user = req.user;
-            res.send(user.shelves);
+            const user = await this.User.findByEmail(req.user.email);
+            if (!user) return res.status(404).send({ message: 'User not found' });
+
+            const shelves = user.shelves || { wantToRead: [], currentlyReading: [], read: [] };
+
+            // Helper to fetch and filter books
+            const populateShelf = async (shelf) => {
+                const books = await Promise.all(shelf.map(async (item) => {
+                    const bookId = item.bookId || item;
+                    const book = await this.Book.findById(bookId);
+                    if (!book) return null;
+                    return {
+                        ...book,
+                        shelfData: item // Keep progress/dates
+                    };
+                }));
+                return books.filter(Boolean);
+            };
+
+            const populatedShelves = {
+                wantToRead: await populateShelf(shelves.wantToRead),
+                currentlyReading: await populateShelf(shelves.currentlyReading),
+                read: await populateShelf(shelves.read)
+            };
+
+            res.send(populatedShelves);
         } catch (error) {
             res.status(500).send({ message: 'Error fetching library', error: error.message });
         }
