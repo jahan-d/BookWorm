@@ -6,6 +6,7 @@ import api from '@/services/api';
 import { Loader2, User, Mail, Camera, Save, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 export default function ProfilePage() {
     const { user, loading: authLoading, refreshUser } = useAuth();
