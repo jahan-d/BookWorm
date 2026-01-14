@@ -20,7 +20,7 @@ export default function RouteGuard({ children }) {
                 // Redirect logic for root path
                 if (pathname === '/') {
                     if (user.role === 'admin') {
-                        router.push('/dashboard');
+                        router.push('/admin/dashboard');
                     } else {
                         router.push('/library');
                     }
@@ -28,7 +28,7 @@ export default function RouteGuard({ children }) {
                 // Prevent authenticated users from accessing login/register
                 if (publicPaths.includes(pathname)) {
                     if (user.role === 'admin') {
-                        router.push('/dashboard');
+                        router.push('/admin/dashboard');
                     } else {
                         router.push('/library');
                     }

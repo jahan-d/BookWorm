@@ -38,20 +38,20 @@ export default function Navbar() {
 
                 {/* Desktop Menu */}
                 <div className="hidden md:flex items-center space-x-8">
-                    <Link href="/books" className="hover:text-primary transition-colors">Explorer</Link>
-                    {user && user.role !== 'admin' && <Link href="/library" className="hover:text-primary transition-colors">My Library</Link>}
+                    <Link href="/books" className="hover:text-primary transition-colors font-medium">Explorer</Link>
+                    {user && <Link href="/library" className="hover:text-primary transition-colors font-medium">My Library</Link>}
 
                     {user && user.role === 'admin' && (
                         <div className="relative group">
                             <button className="flex items-center space-x-1 hover:text-primary transition-colors font-medium">
-                                <span>Admin Tools</span>
+                                <span>Admin Panel</span>
                                 <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
                             <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                                 <div className="glass border border-white/10 rounded-2xl p-4 w-48 shadow-2xl backdrop-blur-xl space-y-2">
-                                    <Link href="/admin/dashboard" className="block p-2 hover:bg-white/10 rounded-lg transition-colors text-sm">Dashboard</Link>
+                                    <Link href="/admin/dashboard" className="block p-2 hover:bg-white/10 rounded-lg transition-colors text-sm font-bold border-b border-white/5 mb-2 pb-2">Admin Dashboard</Link>
                                     <Link href="/admin/books" className="block p-2 hover:bg-white/10 rounded-lg transition-colors text-sm">Manage Books</Link>
                                     <Link href="/admin/genres" className="block p-2 hover:bg-white/10 rounded-lg transition-colors text-sm">Manage Genres</Link>
                                     <Link href="/admin/users" className="block p-2 hover:bg-white/10 rounded-lg transition-colors text-sm">Manage Users</Link>
@@ -64,7 +64,7 @@ export default function Navbar() {
 
                     {user ? (
                         <>
-                            <Link href="/dashboard" className="hover:text-primary transition-colors">Dashboard</Link>
+                            {user.role !== 'admin' && <Link href="/dashboard" className="hover:text-primary transition-colors font-medium">Dashboard</Link>}
                             <div className="flex items-center space-x-4">
                                 <Link href="/profile" className="flex items-center space-x-2 glass px-3 py-1 rounded-full hover:bg-white/10 transition-colors">
                                     <UserIcon className="w-4 h-4" />
@@ -105,11 +105,11 @@ export default function Navbar() {
                         className="absolute top-full left-0 right-0 glass border-t border-white/10 p-6 md:hidden flex flex-col space-y-2 shadow-2xl max-h-[80vh] overflow-y-auto"
                     >
                         <Link href="/books" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>Explorer</Link>
-                        {user && user.role !== 'admin' && <Link href="/library" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>My Library</Link>}
+                        {user && <Link href="/library" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>My Library</Link>}
 
                         {user ? (
                             <>
-                                <Link href="/dashboard" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>Dashboard</Link>
+                                {user.role !== 'admin' && <Link href="/dashboard" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>Dashboard</Link>}
 
                                 {user.role === 'admin' && (
                                     <div className="border-t border-white/10 pt-4 mt-2">
