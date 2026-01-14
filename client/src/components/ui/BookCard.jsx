@@ -3,9 +3,14 @@
 import { motion } from 'framer-motion';
 import { Star, Clock, BookOpen } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
 
 export default function BookCard({ book, index = 0 }) {
+    const [imgSrc, setImgSrc] = useState(book.coverImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(book.title)}&background=random&size=300`);
+    const fallbackSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(book.title)}&background=random&size=300`;
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -16,11 +21,13 @@ export default function BookCard({ book, index = 0 }) {
             <Link href={`/books/${book._id}`}>
                 <div className="relative aspect-[2/3] rounded-2xl overflow-hidden mb-4">
                     <div className="absolute inset-0 bg-secondary/50 animate-pulse" />
-                    <img
-                        src={book.coverImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(book.title)}&background=random&size=300`}
+                    <Image
+                        src={imgSrc}
                         alt={book.title}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        loading="lazy"
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                        onError={() => setImgSrc(fallbackSrc)}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 

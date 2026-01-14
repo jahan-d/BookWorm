@@ -6,8 +6,8 @@ import api from '@/services/api';
 import { motion } from 'framer-motion';
 import { Loader2, Star, BookOpen, Clock, Calendar, Check, Plus, Heart } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import Image from 'next/image';
 
 export default function BookDetailsPage() {
     const { id } = useParams();
@@ -16,6 +16,14 @@ export default function BookDetailsPage() {
     const [loading, setLoading] = useState(true);
     const [shelfLoading, setShelfLoading] = useState(false);
     const [currentShelf, setCurrentShelf] = useState(null);
+    const [imgSrc, setImgSrc] = useState(null);
+    const fallbackSrc = book ? `https://ui-avatars.com/api/?name=${encodeURIComponent(book.title)}&background=random&size=600` : '';
+
+    useEffect(() => {
+        if (book) {
+            setImgSrc(book.coverImage || fallbackSrc);
+        }
+    }, [book, fallbackSrc]);
 
     useEffect(() => {
         fetchBookDetails();
@@ -101,10 +109,13 @@ export default function BookDetailsPage() {
                             animate={{ opacity: 1, scale: 1 }}
                             className="aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl relative"
                         >
-                            <img
-                                src={book.coverImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(book.title)}&background=random&size=600`}
+                            <Image
+                                src={imgSrc || fallbackSrc}
                                 alt={book.title}
-                                className="w-full h-full object-cover"
+                                fill
+                                priority
+                                onError={() => setImgSrc(fallbackSrc)}
+                                className="object-cover"
                             />
                         </motion.div>
 

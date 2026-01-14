@@ -139,20 +139,38 @@ class UserController {
             if (!user) return res.status(404).send({ message: 'User not found' });
 
             const totalBooksRead = user.shelves?.read?.length || 0;
+            const genreMap = {};
 
             // Calculate total pages read from "read" shelf and current progress in "currentlyReading"
             let totalPagesRead = 0;
 
-            // 1. Pages from finished books
-            const readBooks = await Promise.all((user.shelves?.read || []).map(item => this.Book.findById(item.bookId)));
-            readBooks.filter(b => b).forEach(b => { totalPagesRead += (b.pages || 0); });
-
-            // 2. Pages from currently reading
-            (user.shelves?.currentlyReading || []).forEach(item => {
-                totalPagesRead += (item.progress || 0);
+            // 1. Pages and Genres from finished books
+            const finishedBooksData = await Promise.all((user.shelves?.read || []).map(item => this.Book.findById(item.bookId || item)));
+            finishedBooksData.filter(b => b).forEach(b => {
+                totalPagesRead += (b.pages || 0);
+                if (b.genre) genreMap[b.genre] = (genreMap[b.genre] || 0) + 1;
             });
 
-            // Calculate average rating given by user
+            // 2. Pages and Genres from currently reading (Count towards breakdown)
+            const currentBooksData = await Promise.all((user.shelves?.currentlyReading || []).map(item => this.Book.findById(item.bookId || item)));
+            (user.shelves?.currentlyReading || []).forEach((item, idx) => {
+                totalPagesRead += (item.progress || 0);
+                const book = currentBooksData[idx];
+                if (book && book.genre) genreMap[book.genre] = (genreMap[book.genre] || 0) + 1;
+            });
+
+            // 3. Genres from want to read (Include in breakdown to ensure chart has data even if fresh)
+            const wantBooksData = await Promise.all((user.shelves?.wantToRead || []).map(item => this.Book.findById(item.bookId || item)));
+            wantBooksData.filter(b => b).forEach(b => {
+                if (b.genre) genreMap[b.genre] = (genreMap[b.genre] || 0) + 1;
+            });
+
+            // Convert to format expected by Recharts: [{ _id: 'GenreName', count: N }]
+            const favoriteGenres = Object.entries(genreMap)
+                .map(([genre, count]) => ({ _id: genre, count }))
+                .sort((a, b) => b.count - a.count);
+
+            // 4. Calculate average rating given by user
             const userReviews = await this.User.collection.db.collection('reviews').find({ userEmail: email }).toArray();
             const averageRatingGiven = userReviews.length > 0
                 ? (userReviews.reduce((sum, r) => sum + r.rating, 0) / userReviews.length).toFixed(1)
@@ -166,7 +184,8 @@ class UserController {
                 totalPagesRead,
                 averageRatingGiven,
                 readingGoal: user.readingGoal || 0,
-                goalProgress: totalBooksRead
+                goalProgress: totalBooksRead,
+                favoriteGenres
             });
         } catch (error) {
             res.status(500).send({ message: 'Error fetching stats', error: error.message });

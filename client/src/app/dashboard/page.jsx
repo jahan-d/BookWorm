@@ -7,8 +7,10 @@ import api from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, TrendingUp, Book, Target, Activity, Edit3, X } from 'lucide-react';
+import { Loader2, TrendingUp, Book, Target, Activity, Edit3, X, PieChart as PieIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import CircularProgress from '@/components/ui/CircularProgress';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 export default function DashboardPage() {
     const { user, loading: authLoading, refreshUser } = useAuth();
@@ -17,7 +19,15 @@ export default function DashboardPage() {
     const [feed, setFeed] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
-    const [newGoal, setNewGoal] = useState('');
+    const [newGoal, setNewGoal] = useState(user?.readingGoal || 0);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -96,24 +106,13 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                     <StatCard
                         icon={Book}
                         title="Books Read"
                         value={stats?.booksReadThisYear || 0}
                         subtitle="this year"
                         color="bg-blue-500/10 text-blue-500"
-                    />
-                    <StatCard
-                        icon={Target}
-                        title="Annual Goal"
-                        value={`${stats?.goalProgress || 0}/${stats?.readingGoal || 0}`}
-                        subtitle="books completed"
-                        color="bg-purple-500/10 text-purple-500"
-                        onAction={() => {
-                            setNewGoal(stats?.readingGoal || 0);
-                            setIsGoalModalOpen(true);
-                        }}
                     />
                     <StatCard
                         icon={TrendingUp}
@@ -129,6 +128,78 @@ export default function DashboardPage() {
                         subtitle="per book"
                         color="bg-amber-500/10 text-amber-500"
                     />
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                    {/* Annual Goal Visual */}
+                    <div className="glass rounded-3xl p-8 flex flex-col items-center justify-center text-center">
+                        <h3 className="text-xl font-bold mb-6 flex items-center">
+                            <Target className="w-5 h-5 mr-2 text-purple-500" />
+                            Reading Goal
+                        </h3>
+                        <CircularProgress
+                            progress={stats?.readingGoal > 0 ? (stats.goalProgress / stats.readingGoal) * 100 : 0}
+                            size={180}
+                            strokeWidth={12}
+                        />
+                        <div className="mt-6">
+                            <p className="text-3xl font-bold">{stats?.goalProgress || 0} / {stats?.readingGoal || 0}</p>
+                            <p className="text-muted-foreground text-sm mt-1">books completed</p>
+                        </div>
+                        <button
+                            onClick={() => {
+                                setNewGoal(stats?.readingGoal || 0);
+                                setIsGoalModalOpen(true);
+                            }}
+                            className="mt-6 flex items-center text-sm font-bold text-primary hover:underline"
+                        >
+                            <Edit3 className="w-4 h-4 mr-1" />
+                            Adjust Goal
+                        </button>
+                    </div>
+
+                    {/* Genre Breakdown Chart */}
+                    <div className="lg:col-span-2 glass rounded-3xl p-8 min-w-0">
+                        <h3 className="text-xl font-bold mb-6 flex items-center">
+                            <PieIcon className="w-5 h-5 mr-2 text-blue-500" />
+                            Genre Breakdown
+                        </h3>
+                        <div className="h-[350px] w-full relative">
+                            {stats?.favoriteGenres && stats.favoriteGenres.length > 0 ? (
+                                <ResponsiveContainer width="99%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={stats.favoriteGenres.map(g => ({ name: g._id, value: g.count }))}
+                                            cx="50%"
+                                            cy={isMobile ? "40%" : "50%"}
+                                            innerRadius={isMobile ? 50 : 60}
+                                            outerRadius={isMobile ? 70 : 80}
+                                            paddingAngle={5}
+                                            dataKey="value"
+                                        >
+                                            {stats.favoriteGenres.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444'][index % 5]} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                                            itemStyle={{ color: '#fff' }}
+                                        />
+                                        <Legend
+                                            verticalAlign={isMobile ? "bottom" : "middle"}
+                                            align={isMobile ? "center" : "right"}
+                                            layout={isMobile ? "horizontal" : "vertical"}
+                                            wrapperStyle={isMobile ? { paddingTop: '20px' } : { paddingLeft: '20px' }}
+                                        />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            ) : (
+                                <div className="h-full flex items-center justify-center text-muted-foreground italic">
+                                    Not enough data to generate chart.
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
 
                 <div className="grid lg:grid-cols-3 gap-8">

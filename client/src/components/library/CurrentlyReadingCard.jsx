@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { toast } from 'react-hot-toast';
+import Image from 'next/image';
 
 
 /**
@@ -9,6 +9,8 @@ import { toast } from 'react-hot-toast';
 export default function CurrentlyReadingCard({ book, userProgress, onProgressChange }) {
     const [input, setInput] = useState(userProgress ?? 0);
     const [updating, setUpdating] = useState(false);
+    const [imgSrc, setImgSrc] = useState(book.coverImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(book.title)}&background=random&size=300`);
+    const fallbackSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(book.title)}&background=random&size=300`;
 
     const percent = Math.round((userProgress / book.pages) * 100);
 
@@ -34,8 +36,16 @@ export default function CurrentlyReadingCard({ book, userProgress, onProgressCha
     return (
         <div className="glass p-6 rounded-2xl flex flex-col">
             <div className="flex space-x-4 mb-6">
-                <div className="w-20 aspect-[2/3] rounded-lg overflow-hidden flex-shrink-0">
-                    <img src={book.coverImage} alt={`${book.title} cover`} className="w-full h-full object-cover" />
+                <div className="w-20 aspect-[2/3] rounded-lg overflow-hidden flex-shrink-0 relative">
+                    <Image
+                        src={imgSrc}
+                        alt={`${book.title} cover`}
+                        fill
+                        placeholder="blur"
+                        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/+F9PQAI8AKp24P6GgAAAABJRU5ErkJggg=="
+                        onError={() => setImgSrc(fallbackSrc)}
+                        className="object-cover"
+                    />
                 </div>
                 <div>
                     <h3 className="font-bold line-clamp-1">{book.title}</h3>
