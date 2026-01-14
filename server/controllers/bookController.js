@@ -2,6 +2,7 @@ class BookController {
     constructor(models) {
         this.Book = models.Book;
         this.Review = models.Review;
+        this.Genre = models.Genre;
     }
 
     async getBooks(req, res) {
@@ -60,6 +61,15 @@ class BookController {
     async addBook(req, res) {
         try {
             const bookData = req.body;
+
+            // Auto-add Genre if it doesn't exist
+            if (bookData.genre) {
+                const existingGenre = await this.Genre.findByName(bookData.genre);
+                if (!existingGenre) {
+                    await this.Genre.create(bookData.genre);
+                }
+            }
+
             const result = await this.Book.create(bookData);
             res.status(201).send(result);
         } catch (error) {
@@ -71,6 +81,15 @@ class BookController {
         try {
             const id = req.params.id;
             const updateData = req.body;
+
+            // Auto-add Genre if it doesn't exist
+            if (updateData.genre) {
+                const existingGenre = await this.Genre.findByName(updateData.genre);
+                if (!existingGenre) {
+                    await this.Genre.create(updateData.genre);
+                }
+            }
+
             const result = await this.Book.update(id, updateData);
             res.send(result);
         } catch (error) {

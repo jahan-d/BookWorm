@@ -13,6 +13,10 @@ class Genre {
         return await this.collection.find({}).toArray();
     }
 
+    async findByName(name) {
+        return await this.collection.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } });
+    }
+
     async update(id, name) {
         return await this.collection.updateOne(
             { _id: new ObjectId(id) },
