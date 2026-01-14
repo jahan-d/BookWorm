@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🖥️ BookWorm Frontend — Next.js 15 App
 
-## Getting Started
+This is the client-side application for the BookWorm ecosystem. It is a high-performance, responsive web application built with a focus on modern design patterns, accessibility, and efficient state management.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🛠️ Technical Highlights
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Next.js 15 App Router**: Leveraging the latest React Server Components (RSC) and streaming architectures for faster page loads.
+- **Glassmorphism UI**: A bespoke design system implemented with vanilla CSS, focusing on visual depth, modern typography, and a premium dark-themed aesthetic.
+- **Framer Motion Animations**: used to create smooth micro-interactions, layout transitions, and interactive components like the mobile menu and book progress bars.
+- **Context-API State Management**: Centralized handling for authentication, user preferences, and cross-component state synchronization.
+- **Optimistic UI Updates**: Implemented in critical areas like the "Currently Reading" progress tracking to ensure an instantaneous user experience.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📦 Key Directory Structure
 
-## Learn More
+- `src/app`: Contains the routing structure using the Next.js App Router (Library, Dashboard, Tutorials, etc.).
+- `src/components`:
+  - `auth/`: High-order components like `RouteGuard` for global access control.
+  - `layout/`: Global UI elements like the responsive `Navbar` and `Footer`.
+  - `library/`: Feature-specific components for book management.
+  - `ui/`: Reusable, atomic UI components (Buttons, Modals, Cards).
+- `src/services`: API abstraction layers using Axios for standardized backend communication.
+- `src/context`: Global providers for application state.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚦 Local Development
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Install Dependencies**
+   ```bash
+   npm install
+   ```
 
-## Deploy on Vercel
+2. **Environment Configuration**
+   Create a `.env.local` file:
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:5000
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. **Run Dev Server**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🏁 Build & Deployment
+
+- **Production Build**: `npm run build`
+- **Deployment**: Integrated with Vercel for continuous deployment and edge-based delivery.
+
+---
+*Built for the BookWorm Portfolio Showcase*
