@@ -28,12 +28,24 @@ export default function DashboardPage() {
 
     const fetchDashboardData = async () => {
         try {
+            // Try to load cached stats first
+            if (typeof window !== 'undefined') {
+                const cached = localStorage.getItem('dashboardStats');
+                if (cached) {
+                    setStats(JSON.parse(cached));
+                    // We'll still fetch fresh data to keep it up‑to‑date
+                }
+            }
             const [statsRes, feedRes] = await Promise.all([
                 api.get('/users/stats'),
                 api.get('/users/feed')
             ]);
             setStats(statsRes.data);
             setFeed(feedRes.data);
+            // Clear cached stats after successful fetch
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('dashboardStats');
+            }
         } catch (err) {
             console.error('Failed to fetch dashboard data:', err);
         } finally {

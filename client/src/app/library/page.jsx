@@ -87,53 +87,28 @@ export default function LibraryPage() {
                             <p className="text-muted-foreground italic">You aren't reading anything right now.</p>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {shelves.currentlyReading.map((book, i) => (
-                                    <div key={book._id} className="glass p-6 rounded-2xl flex flex-col">
-                                        <div className="flex space-x-4 mb-6">
-                                            <div className="w-20 aspect-[2/3] rounded-lg overflow-hidden flex-shrink-0">
-                                                <img src={book.coverImage} alt={book.title} className="w-full h-full object-cover" />
-                                            </div>
-                                            <div>
-                                                <h3 className="font-bold line-clamp-1">{book.title}</h3>
-                                                <p className="text-sm text-muted-foreground">{book.author}</p>
-                                                <p className="text-xs text-primary mt-2 font-bold uppercase tracking-wider">{book.pages} Pages Total</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-auto space-y-4">
-                                            <div>
-                                                <div className="flex justify-between text-sm mb-2">
-                                                    <span className="text-muted-foreground">Progress</span>
-                                                    <span className="font-bold">
-                                                        {Math.round(((user.shelves?.currentlyReading?.find(s => s.bookId === book._id)?.progress || 0) / book.pages) * 100)}%
-                                                    </span>
-                                                </div>
-                                                <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
-                                                    <div
-                                                        className="h-full bg-primary transition-all duration-500"
-                                                        style={{ width: `${Math.min(100, ((user.shelves?.currentlyReading?.find(s => s.bookId === book._id)?.progress || 0) / book.pages) * 100)}%` }}
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-center space-x-2 pt-2">
-                                                <input
-                                                    type="number"
-                                                    className="w-20 bg-black/20 border border-white/10 rounded-lg p-2 text-sm focus:border-primary focus:outline-none"
-                                                    placeholder="Page"
-                                                    defaultValue={user.shelves?.currentlyReading?.find(s => s.bookId === book._id)?.progress || 0}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter') {
-                                                            handleProgressUpdate(book._id, e.target.value);
-                                                            e.target.blur();
-                                                        }
-                                                    }}
-                                                />
-                                                <span className="text-xs text-muted-foreground"> / {book.pages}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+                                {shelves.currentlyReading.map((book) => {
+                                    const userProgress = user?.shelves?.currentlyReading?.find(s => s.bookId === book._id)?.progress || 0;
+                                    const handleProgressChange = async (bookId, pages) => {
+                                        // Update progress on server
+                                        await api.put('/users/progress', { bookId, pagesRead: pages });
+                                        // Refresh user data (includes updated shelves)
+                                        await refreshUser();
+                                        // Fetch updated dashboard stats and store for dashboard page
+                                        const statsRes = await api.get('/users/stats');
+                                        if (typeof window !== 'undefined') {
+                                            localStorage.setItem('dashboardStats', JSON.stringify(statsRes.data));
+                                        }
+                                    };
+                                    return (
+                                        <CurrentlyReadingCard
+                                            key={book._id}
+                                            book={book}
+                                            userProgress={userProgress}
+                                            onProgressChange={handleProgressChange}
+                                        />
+                                    );
+                                })}
                             </div>
                         )}
                     </section>
