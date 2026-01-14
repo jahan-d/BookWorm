@@ -139,6 +139,14 @@ export default function ProfilePage() {
                     </form>
                 </motion.div>
 
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                >
+                    <ConnectionsList />
+                </motion.div>
+
                 {/* My Reviews Section */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -200,6 +208,121 @@ function MyReviewsList() {
                     </div>
                 ))
             )}
+        </div>
+    );
+}
+
+function ConnectionsList() {
+    const [network, setNetwork] = useState({ followers: [], following: [] });
+    const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('following');
+    const { user: currentUser, refreshUser } = useAuth();
+
+    // Helper to check if we follow a user (useful for the Followers tab)
+    const isFollowingUser = (email) => currentUser?.following?.includes(email);
+
+    const fetchNetwork = async () => {
+        try {
+            const res = await api.get('/users/connections');
+            setNetwork(res.data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchNetwork();
+    }, [currentUser]); // Re-fetch when currentUser changes (e.g. after follow/unfollow)
+
+    const handleToggleFollow = async (email) => {
+        try {
+            const isFollowing = isFollowingUser(email);
+            if (isFollowing) {
+                await api.post('/users/unfollow', { targetEmail: email });
+            } else {
+                await api.post('/users/follow', { targetEmail: email });
+            }
+            // Update both global user state and local network list
+            await refreshUser();
+            // We also technically need to update the local 'network' state if we want instant optimistic updates, 
+            // but relying on the useEffect triggered by refreshUser -> currentUser change might be enough or we re-fetch.
+            // Let's rely on re-fetch for accuracy.
+        } catch (err) {
+            console.error('Failed to toggle follow', err);
+        }
+    };
+
+    if (loading) return <Loader2 className="w-6 h-6 animate-spin mx-auto" />;
+
+    const displayedUsers = activeTab === 'following' ? network.following : network.followers;
+
+    return (
+        <div className="glass rounded-3xl p-8 border border-white/10 mt-12">
+            <h2 className="text-2xl font-bold mb-6">My Network</h2>
+
+            {/* Tabs */}
+            <div className="flex space-x-1 bg-white/5 p-1 rounded-xl mb-6">
+                <button
+                    onClick={() => setActiveTab('following')}
+                    className={cn(
+                        "flex-1 py-2 text-sm font-bold rounded-lg transition-all",
+                        activeTab === 'following' ? "bg-primary text-white shadow-lg" : "text-muted-foreground hover:bg-white/5"
+                    )}
+                >
+                    Following ({network.following.length})
+                </button>
+                <button
+                    onClick={() => setActiveTab('followers')}
+                    className={cn(
+                        "flex-1 py-2 text-sm font-bold rounded-lg transition-all",
+                        activeTab === 'followers' ? "bg-primary text-white shadow-lg" : "text-muted-foreground hover:bg-white/5"
+                    )}
+                >
+                    Followers ({network.followers.length})
+                </button>
+            </div>
+
+            {/* List */}
+            <div className="space-y-4">
+                {displayedUsers.length === 0 ? (
+                    <p className="text-muted-foreground italic text-center py-8">
+                        {activeTab === 'following' ? "You aren't following anyone yet." : "You don't have any followers yet."}
+                    </p>
+                ) : (
+                    displayedUsers.map((u, i) => {
+                        const isFollowing = isFollowingUser(u.email);
+                        // In 'following' tab, isFollowing is always true initially (unless toggled).
+                        // In 'followers' tab, it might be true or false.
+
+                        return (
+                            <div key={i} className="flex items-center justify-between group">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center font-bold text-sm">
+                                        {u.photoURL ? <img src={u.photoURL} alt={u.name} className="w-full h-full rounded-full object-cover" /> : u.name?.[0]}
+                                    </div>
+                                    <div>
+                                        <p className="font-medium">{u.name}</p>
+                                        <p className="text-xs text-muted-foreground">{u.email}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => handleToggleFollow(u.email)}
+                                    className={cn(
+                                        "text-xs px-4 py-2 rounded-full border transition-colors font-medium",
+                                        isFollowing
+                                            ? "border-white/10 text-muted-foreground hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/50"
+                                            : "border-primary text-primary hover:bg-primary hover:text-white"
+                                    )}
+                                >
+                                    {isFollowing ? 'Following' : 'Follow Back'}
+                                </button>
+                            </div>
+                        );
+                    })
+                )}
+            </div>
         </div>
     );
 }

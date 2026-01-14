@@ -232,12 +232,16 @@ function DiscoveryList() {
         fetchUsers();
     }, []);
 
-    const handleFollow = async (email) => {
+    const handleToggleFollow = async (email, isFollowing) => {
         try {
-            await api.post('/users/follow', { targetEmail: email });
-            await refreshUser(); // Update follower list in local state
+            if (isFollowing) {
+                await api.post('/users/unfollow', { targetEmail: email });
+            } else {
+                await api.post('/users/follow', { targetEmail: email });
+            }
+            await refreshUser();
         } catch (err) {
-            console.error('Failed to follow', err);
+            console.error('Failed to toggle follow', err);
         }
     };
 
@@ -251,16 +255,17 @@ function DiscoveryList() {
                     <div key={i} className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                             <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center font-bold text-xs">
-                                {u.photoURL ? <img src={u.photoURL} className="w-full h-full rounded-full object-cover" /> : u.name?.[0]}
+                                {u.photoURL ? <img src={u.photoURL} alt={u.name} className="w-full h-full rounded-full object-cover" /> : u.name?.[0]}
                             </div>
                             <span className="text-sm font-medium">{u.name}</span>
                         </div>
                         <button
-                            onClick={() => handleFollow(u.email)}
-                            disabled={isFollowing}
+                            onClick={() => handleToggleFollow(u.email, isFollowing)}
                             className={cn(
                                 "text-xs px-3 py-1 rounded-full border transition-colors",
-                                isFollowing ? "border-white/10 text-muted-foreground cursor-default" : "border-primary text-primary hover:bg-primary hover:text-white"
+                                isFollowing
+                                    ? "border-white/10 text-muted-foreground hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/50"
+                                    : "border-primary text-primary hover:bg-primary hover:text-white"
                             )}
                         >
                             {isFollowing ? 'Following' : 'Follow'}
