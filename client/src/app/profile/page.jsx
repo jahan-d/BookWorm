@@ -74,7 +74,7 @@ export default function ProfilePage() {
                             <div className="relative group">
                                 <div className="w-32 h-32 rounded-full overflow-hidden bg-secondary border-4 border-white/5 relative">
                                     <img
-                                        src={photoURL || 'https://via.placeholder.com/150'}
+                                        src={photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=random`}
                                         alt="Avatar"
                                         className="w-full h-full object-cover"
                                     />

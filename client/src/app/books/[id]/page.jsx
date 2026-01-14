@@ -98,7 +98,7 @@ export default function BookDetailsPage() {
                             className="aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl relative"
                         >
                             <img
-                                src={book.coverImage || 'https://via.placeholder.com/600x900?text=No+Cover'}
+                                src={book.coverImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(book.title)}&background=random&size=600`}
                                 alt={book.title}
                                 className="w-full h-full object-cover"
                             />

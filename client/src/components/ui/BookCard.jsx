@@ -17,7 +17,7 @@ export default function BookCard({ book, index = 0 }) {
                 <div className="relative aspect-[2/3] rounded-2xl overflow-hidden mb-4">
                     <div className="absolute inset-0 bg-secondary/50 animate-pulse" />
                     <img
-                        src={book.coverImage || 'https://via.placeholder.com/300x450?text=No+Cover'}
+                        src={book.coverImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(book.title)}&background=random&size=300`}
                         alt={book.title}
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         loading="lazy"
