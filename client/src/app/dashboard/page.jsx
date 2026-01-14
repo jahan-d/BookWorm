@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { toast } from 'react-hot-toast';
 import api from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -55,12 +56,24 @@ export default function DashboardPage() {
     const handleGoalUpdate = async (e) => {
         e.preventDefault();
         try {
-            await api.put('/users/goal', { readingGoal: parseInt(newGoal) });
-            await refreshUser();
-            setStats({ ...stats, readingGoal: parseInt(newGoal) });
+            const goalValue = parseInt(newGoal);
+            await api.put('/users/goal', { readingGoal: goalValue });
+
+            // Optimistically update local state and cache
+            const updatedStats = { ...stats, readingGoal: goalValue };
+            setStats(updatedStats);
+
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('dashboardStats', JSON.stringify(updatedStats));
+            }
+
             setIsGoalModalOpen(false);
+
+            // Refresh user last to ensure global state sync (triggers re-fetch but cache protects UI)
+            await refreshUser();
         } catch (err) {
             console.error('Failed to update goal:', err);
+            toast.error('Failed to update goal');
         }
     };
 
