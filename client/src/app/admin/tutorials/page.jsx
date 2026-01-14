@@ -38,6 +38,16 @@ export default function ManageTutorialsPage() {
         }
     };
 
+    const handleDelete = async (id) => {
+        if (!window.confirm('Are you sure you want to delete this tutorial?')) return;
+        try {
+            await api.delete(`/admin/tutorials/${id}`);
+            fetchTutorials();
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     if (loading) return <div className="flex justify-center p-10"><Loader2 className="w-10 h-10 animate-spin" /></div>;
 
     return (
@@ -55,14 +65,21 @@ export default function ManageTutorialsPage() {
 
             <div className="grid gap-4">
                 {tutorials.map((tutorial, i) => (
-                    <div key={i} className="glass p-6 rounded-2xl flex justify-between items-center">
-                        <div>
-                            <h3 className="font-bold text-lg">{tutorial.title}</h3>
+                    <div key={tutorial._id || i} className="glass p-6 rounded-2xl flex justify-between items-center group">
+                        <div className="flex-1">
+                            <h3 className="font-bold text-lg group-hover:text-primary transition-colors">{tutorial.title}</h3>
                             <a href={tutorial.videoUrl} target="_blank" className="text-primary text-sm flex items-center hover:underline mt-1">
                                 {tutorial.videoUrl} <ExternalLink className="w-3 h-3 ml-1" />
                             </a>
+                            <p className="text-muted-foreground text-sm mt-2 line-clamp-1">{tutorial.description}</p>
                         </div>
-                        {/* Delete skipped for now */}
+                        <button
+                            onClick={() => handleDelete(tutorial._id)}
+                            className="p-3 text-red-400 hover:bg-red-500/10 rounded-full transition-all"
+                            title="Delete Tutorial"
+                        >
+                            <Trash2 className="w-5 h-5" />
+                        </button>
                     </div>
                 ))}
             </div>
