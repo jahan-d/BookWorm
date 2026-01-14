@@ -11,16 +11,20 @@ export const metadata = {
   description: 'Your digital reading companion',
 };
 
+import RouteGuard from '@/components/auth/RouteGuard';
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
         <AuthProvider>
-          <Navbar />
-          <main className="min-h-screen">
-            {children}
-          </main>
-          <Footer />
+          <RouteGuard>
+            <Navbar />
+            <main className="min-h-screen">
+              {children}
+            </main>
+            <Footer />
+          </RouteGuard>
         </AuthProvider>
       </body>
     </html>
