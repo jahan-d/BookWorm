@@ -19,8 +19,9 @@ function adminRoutes(app, controllers) {
     app.post('/admin/genres', verifyToken, verifyAdmin, (req, res) => adminController.addGenre(req, res));
 
     // Manage Tutorials
-    app.get('/admin/tutorials', verifyToken, verifyAdmin, (req, res) => adminController.manageTutorials(req, res));
-    app.post('/admin/tutorials', verifyToken, verifyAdmin, (req, res) => adminController.addTutorial(req, res));
+    app.get('/admin/tutorials', verifyToken, verifyAdmin, (req, res) => controllers.tutorial.getTutorials(req, res));
+    app.post('/admin/tutorials', verifyToken, verifyAdmin, (req, res) => controllers.tutorial.addTutorial(req, res));
+    app.delete('/admin/tutorials/:id', verifyToken, verifyAdmin, (req, res) => controllers.tutorial.deleteTutorial(req, res));
 }
 
 module.exports = adminRoutes;
