@@ -3,11 +3,12 @@ const { verifyToken, verifyAdmin } = require('../middleware/auth');
 function bookRoutes(app, controllers) {
     const bookController = controllers.book;
 
-    // Get all books (Protected)
-    app.get('/books', verifyToken, (req, res) => bookController.getBooks(req, res));
+    // Get all books (Public)
+    app.get('/books', (req, res) => bookController.getBooks(req, res));
 
-    // Get book details (Protected)
-    app.get('/books/:id', verifyToken, (req, res) => bookController.getBookDetails(req, res));
+    // Get book details (Public, but optional auth for user reviews)
+    const { verifyTokenOptional } = require('../middleware/auth');
+    app.get('/books/:id', verifyTokenOptional, (req, res) => bookController.getBookDetails(req, res));
 
     // Admin: Add book
     app.post('/books', verifyToken, verifyAdmin, (req, res) => bookController.addBook(req, res));

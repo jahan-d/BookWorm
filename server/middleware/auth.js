@@ -42,4 +42,31 @@ const verifyAdmin = (req, res, next) => {
     }
 };
 
-module.exports = { verifyToken, verifyAdmin };
+const verifyTokenOptional = async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return next(); // Proceed without user
+    }
+
+    const token = authHeader.split(' ')[1];
+    if (!token) return next();
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        if (!req.collections || !req.collections.users) {
+            return next();
+        }
+
+        const user = await req.collections.users.findOne({ _id: new ObjectId(decoded.uid) });
+        if (user) {
+            req.user = user;
+        }
+        next();
+    } catch (err) {
+        // Token invalid/expired - just treat as guest
+        next();
+    }
+};
+
+module.exports = { verifyToken, verifyAdmin, verifyTokenOptional };
