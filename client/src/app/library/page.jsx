@@ -9,7 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
 export default function LibraryPage() {
-    const { user, loading: authLoading } = useAuth();
+    const { user, loading: authLoading, refreshUser } = useAuth();
     const router = useRouter();
     const [shelves, setShelves] = useState({ read: [], currentlyReading: [], wantToRead: [] });
     const [loading, setLoading] = useState(true);
