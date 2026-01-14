@@ -30,7 +30,7 @@ export default function RegisterPage() {
         setError('');
 
         try {
-            const user = await register(name, email, password, photoURL);
+            await register(name, email, password, photoURL);
             // Redirect based on role (default is user)
             router.push('/library');
         } catch (err) {

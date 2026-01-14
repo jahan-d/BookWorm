@@ -11,6 +11,13 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
+    const logout = () => {
+        localStorage.removeItem('token');
+        delete api.defaults.headers.common['Authorization'];
+        setUser(null);
+        router.push('/login');
+    };
+
     useEffect(() => {
         // Init: Check for token
         const initAuth = async () => {
@@ -62,12 +69,7 @@ export function AuthProvider({ children }) {
         }
     };
 
-    const logout = () => {
-        localStorage.removeItem('token');
-        delete api.defaults.headers.common['Authorization'];
-        setUser(null);
-        router.push('/login');
-    };
+
 
     const refreshUser = async () => {
         try {

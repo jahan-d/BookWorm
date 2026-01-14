@@ -53,16 +53,7 @@ export default function LibraryPage() {
         }
     };
 
-    const handleProgressUpdate = async (bookId, pagesRead) => {
-        try {
-            await api.put('/users/progress', { bookId, pagesRead });
-            await refreshUser();
-            // Refresh library to show updated progress
-            fetchLibrary();
-        } catch (err) {
-            console.error('Failed to update progress:', err);
-        }
-    };
+
 
     if (authLoading || loading) {
         return (
@@ -85,7 +76,7 @@ export default function LibraryPage() {
                             Currently Reading
                         </h2>
                         {shelves.currentlyReading.length === 0 ? (
-                            <p className="text-muted-foreground italic">You aren't reading anything right now.</p>
+                            <p className="text-muted-foreground italic">You aren&apos;t reading anything right now.</p>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {shelves.currentlyReading.map((book) => {

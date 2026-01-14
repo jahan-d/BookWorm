@@ -72,8 +72,7 @@ export default function TermsPage() {
                     <section className="glass rounded-3xl p-8">
                         <h2 className="text-2xl font-bold mb-4">6. Termination</h2>
                         <p className="text-muted-foreground leading-relaxed">
-                            We reserve the right to terminate or suspend your account at any time for violations of
-                            these Terms of Service or for any other reason. You may also delete your account at any
+                            We reserve the right to suspend or terminate your account if you violate these terms or engage in &quot;trolling&quot;, &quot;spamming&quot;, or other harmful behavior.ce or for any other reason. You may also delete your account at any
                             time through your account settings.
                         </p>
                     </section>

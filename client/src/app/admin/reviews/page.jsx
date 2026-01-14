@@ -53,7 +53,7 @@ export default function ManageReviewsPage() {
                                     <div className="flex text-yellow-500 mb-2">
                                         {[...Array(review.rating)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
                                     </div>
-                                    <p className="text-sm text-muted-foreground">For Book ID: {review.bookId}</p>
+                                    <p className="text-sm text-muted-foreground italic">&quot;{review.text}&quot;</p>
                                 </div>
                                 <div className="flex space-x-2">
                                     <button

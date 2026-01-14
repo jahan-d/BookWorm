@@ -319,7 +319,7 @@ function SuggestionsList() {
                 </Link>
             ))}
             {books.length === 0 && (
-                <p className="text-xs text-muted-foreground italic text-center py-4">Add more books to your 'Read' shelf to get personalized suggestions.</p>
+                <p className="text-xs text-muted-foreground italic text-center py-4">Add more books to your &apos;Read&apos; shelf to get personalized suggestions.</p>
             )}
         </div>
     );

@@ -51,7 +51,7 @@ export default function AboutPage() {
                     <section className="glass rounded-3xl p-8">
                         <h2 className="text-3xl font-bold mb-4">Join Our Community</h2>
                         <p className="text-muted-foreground leading-relaxed">
-                            Whether you're a casual reader or a bookworm who devours hundreds of books a year,
+                            Whether you&apos;re a casual reader or a bookworm who devours hundreds of books a year,
                             we welcome you to join our growing community. Start tracking your reading journey today!
                         </p>
                     </section>

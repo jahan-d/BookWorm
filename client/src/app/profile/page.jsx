@@ -181,7 +181,7 @@ function MyReviewsList() {
     return (
         <div className="space-y-4">
             {reviews.length === 0 ? (
-                <p className="text-muted-foreground italic text-center py-8 glass rounded-2xl">You haven't written any reviews yet.</p>
+                <p className="text-muted-foreground italic text-center py-8 glass rounded-2xl">You haven&apos;t written any reviews yet.</p>
             ) : (
                 reviews.map((review, i) => (
                     <div key={i} className="glass p-5 rounded-2xl border border-white/5 relative overflow-hidden">
@@ -196,7 +196,7 @@ function MyReviewsList() {
                         <div className="flex text-yellow-500 mb-2">
                             {[...Array(review.rating)].map((_, j) => <span key={j}>★</span>)}
                         </div>
-                        <p className="text-sm text-muted-foreground italic">"{review.text}"</p>
+                        <p className="text-sm text-muted-foreground italic">&quot;{review.text}&quot;</p>
                     </div>
                 ))
             )}

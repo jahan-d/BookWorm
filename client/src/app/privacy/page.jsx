@@ -57,7 +57,7 @@ export default function PrivacyPage() {
                     <section className="glass rounded-3xl p-8">
                         <h2 className="text-2xl font-bold mb-4">Cookies</h2>
                         <p className="text-muted-foreground leading-relaxed">
-                            We use cookies and similar technologies to maintain your session, remember your preferences,
+                            Use of the service implies acceptance of our use of cookies. We use &quot;local storage&quot; and &quot;session cookies&quot; to keep you logged in and remember your preferences.,
                             and analyze site usage. You can control cookie settings through your browser preferences.
                         </p>
                     </section>
