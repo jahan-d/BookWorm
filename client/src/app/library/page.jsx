@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/services/api';
 import BookCard from '@/components/ui/BookCard';
+import CurrentlyReadingCard from '@/components/library/CurrentlyReadingCard';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
