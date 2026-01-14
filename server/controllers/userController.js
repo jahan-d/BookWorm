@@ -110,7 +110,10 @@ class UserController {
     async getStats(req, res) {
         try {
             const email = req.user.email;
-            const user = req.user;
+
+            // Critical Fix: Fetch fresh user data from DB instead of using potentially stale req.user
+            const user = await this.User.findByEmail(email);
+            if (!user) return res.status(404).send({ message: 'User not found' });
 
             const totalBooksRead = user.shelves?.read?.length || 0;
 
@@ -131,6 +134,9 @@ class UserController {
             const averageRatingGiven = userReviews.length > 0
                 ? (userReviews.reduce((sum, r) => sum + r.rating, 0) / userReviews.length).toFixed(1)
                 : 'N/A';
+
+            // Prevent caching to ensure updates are seen immediately
+            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
 
             res.send({
                 booksReadThisYear: totalBooksRead,
