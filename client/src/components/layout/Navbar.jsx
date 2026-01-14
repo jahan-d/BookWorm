@@ -80,21 +80,21 @@ export default function Navbar() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="absolute top-full left-0 right-0 glass border-t border-white/10 p-6 md:hidden flex flex-col space-y-4 shadow-2xl"
+                        className="absolute top-full left-0 right-0 glass border-t border-white/10 p-6 md:hidden flex flex-col space-y-2 shadow-2xl"
                     >
-                        <Link href="/books" className="text-lg font-medium hover:text-primary transition-colors" onClick={closeMenu}>Explorer</Link>
-                        {user && <Link href="/library" className="text-lg font-medium hover:text-primary transition-colors" onClick={closeMenu}>My Library</Link>}
+                        <Link href="/books" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>Explorer</Link>
+                        {user && <Link href="/library" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>My Library</Link>}
 
                         {user ? (
                             <>
-                                <Link href="/dashboard" className="text-lg font-medium hover:text-primary transition-colors" onClick={closeMenu}>Dashboard</Link>
-                                <Link href="/profile" className="text-lg font-medium hover:text-primary transition-colors flex items-center justify-between bg-white/5 p-3 rounded-xl" onClick={closeMenu}>
+                                <Link href="/dashboard" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>Dashboard</Link>
+                                <Link href="/profile" className="text-lg font-medium hover:text-primary transition-all flex items-center justify-between bg-white/5 hover:bg-white/10 p-3 rounded-xl" onClick={closeMenu}>
                                     <span>My Profile</span>
                                     <UserIcon className="w-5 h-5" />
                                 </Link>
                                 <button
                                     onClick={() => { logout(); closeMenu(); }}
-                                    className="text-lg font-medium text-red-400 flex items-center space-x-2 hover:bg-red-500/10 p-3 rounded-xl transition-colors"
+                                    className="w-full text-left text-lg font-medium text-red-400 flex items-center space-x-2 hover:bg-red-500/10 p-3 rounded-xl transition-all"
                                 >
                                     <LogOut className="w-5 h-5" />
                                     <span>Logout</span>
