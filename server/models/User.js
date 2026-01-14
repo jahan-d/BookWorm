@@ -45,6 +45,17 @@ class User {
         );
     }
 
+    async unfollow(followerEmail, targetEmail) {
+        await this.collection.updateOne(
+            { email: followerEmail },
+            { $pull: { following: targetEmail } }
+        );
+        return await this.collection.updateOne(
+            { email: targetEmail },
+            { $pull: { followers: followerEmail } }
+        );
+    }
+
     async updateRole(id, role) {
         return await this.collection.updateOne(
             { _id: new ObjectId(id) },

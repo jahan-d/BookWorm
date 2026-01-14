@@ -170,6 +170,48 @@ class UserController {
         }
     }
 
+    async unfollowUser(req, res) {
+        try {
+            const email = req.user.email;
+            const { targetEmail } = req.body;
+            const result = await this.User.unfollow(email, targetEmail);
+            res.send(result);
+        } catch (error) {
+            res.status(500).send({ message: 'Error unfollowing user', error: error.message });
+        }
+    }
+
+    async getNetwork(req, res) {
+        try {
+            const email = req.user.email;
+
+            // Get fresh user data
+            const user = await this.User.findByEmail(email);
+            if (!user) return res.status(404).send({ message: 'User not found' });
+
+            const followers = user.followers || [];
+            const following = user.following || [];
+
+            // Fetch details for all users in these lists
+            const uniqueEmails = [...new Set([...followers, ...following])];
+
+            const users = await this.User.collection.find(
+                { email: { $in: uniqueEmails } },
+                { projection: { name: 1, email: 1, photoURL: 1 } }
+            ).toArray();
+
+            // Map back to lists
+            const userMap = users.reduce((acc, u) => ({ ...acc, [u.email]: u }), {});
+
+            res.send({
+                followers: followers.map(e => userMap[e]).filter(u => u),
+                following: following.map(e => userMap[e]).filter(u => u)
+            });
+        } catch (error) {
+            res.status(500).send({ message: 'Error fetching network', error: error.message });
+        }
+    }
+
     async getActivityFeed(req, res) {
         try {
             const email = req.user.email;

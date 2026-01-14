@@ -36,6 +36,12 @@ function userRoutes(app, controllers) {
     // Follow User
     app.post('/users/follow', verifyToken, (req, res) => userController.followUser(req, res));
 
+    // Unfollow User
+    app.post('/users/unfollow', verifyToken, (req, res) => userController.unfollowUser(req, res));
+
+    // Get Network (Followers/Following)
+    app.get('/users/connections', verifyToken, (req, res) => userController.getNetwork(req, res));
+
     // Activity Feed
     app.get('/users/feed', verifyToken, (req, res) => userController.getActivityFeed(req, res));
 
