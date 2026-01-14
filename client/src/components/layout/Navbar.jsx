@@ -39,7 +39,29 @@ export default function Navbar() {
                 {/* Desktop Menu */}
                 <div className="hidden md:flex items-center space-x-8">
                     <Link href="/books" className="hover:text-primary transition-colors">Explorer</Link>
-                    {user && <Link href="/library" className="hover:text-primary transition-colors">My Library</Link>}
+                    {user && user.role !== 'admin' && <Link href="/library" className="hover:text-primary transition-colors">My Library</Link>}
+
+                    {user && user.role === 'admin' && (
+                        <div className="relative group">
+                            <button className="flex items-center space-x-1 hover:text-primary transition-colors font-medium">
+                                <span>Admin Tools</span>
+                                <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                                <div className="glass border border-white/10 rounded-2xl p-4 w-48 shadow-2xl backdrop-blur-xl space-y-2">
+                                    <Link href="/admin/dashboard" className="block p-2 hover:bg-white/10 rounded-lg transition-colors text-sm">Dashboard</Link>
+                                    <Link href="/admin/books" className="block p-2 hover:bg-white/10 rounded-lg transition-colors text-sm">Manage Books</Link>
+                                    <Link href="/admin/genres" className="block p-2 hover:bg-white/10 rounded-lg transition-colors text-sm">Manage Genres</Link>
+                                    <Link href="/admin/users" className="block p-2 hover:bg-white/10 rounded-lg transition-colors text-sm">Manage Users</Link>
+                                    <Link href="/admin/reviews" className="block p-2 hover:bg-white/10 rounded-lg transition-colors text-sm">Moderate Reviews</Link>
+                                    <Link href="/admin/tutorials" className="block p-2 hover:bg-white/10 rounded-lg transition-colors text-sm">Manage Tutorials</Link>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {user ? (
                         <>
                             <Link href="/dashboard" className="hover:text-primary transition-colors">Dashboard</Link>
@@ -66,7 +88,7 @@ export default function Navbar() {
 
                 {/* Mobile Menu Toggle */}
                 <button
-                    className="md:hidden p-2 z-50"
+                    className="md:hidden p-2 z-50 text-white"
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 >
                     {isMobileMenuOpen ? <LogOut className="w-6 h-6 rotate-180" /> : <Menu className="w-6 h-6" />}
@@ -80,15 +102,30 @@ export default function Navbar() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="absolute top-full left-0 right-0 glass border-t border-white/10 p-6 md:hidden flex flex-col space-y-2 shadow-2xl"
+                        className="absolute top-full left-0 right-0 glass border-t border-white/10 p-6 md:hidden flex flex-col space-y-2 shadow-2xl max-h-[80vh] overflow-y-auto"
                     >
                         <Link href="/books" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>Explorer</Link>
-                        {user && <Link href="/library" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>My Library</Link>}
+                        {user && user.role !== 'admin' && <Link href="/library" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>My Library</Link>}
 
                         {user ? (
                             <>
                                 <Link href="/dashboard" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>Dashboard</Link>
-                                <Link href="/profile" className="text-lg font-medium hover:text-primary transition-all flex items-center justify-between bg-white/5 hover:bg-white/10 p-3 rounded-xl" onClick={closeMenu}>
+
+                                {user.role === 'admin' && (
+                                    <div className="border-t border-white/10 pt-4 mt-2">
+                                        <p className="px-3 text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Admin Tools</p>
+                                        <div className="grid grid-cols-1 gap-2">
+                                            <Link href="/admin/dashboard" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>Admin Dashboard</Link>
+                                            <Link href="/admin/books" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>Manage Books</Link>
+                                            <Link href="/admin/genres" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>Manage Genres</Link>
+                                            <Link href="/admin/users" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>Manage Users</Link>
+                                            <Link href="/admin/reviews" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>Moderate Reviews</Link>
+                                            <Link href="/admin/tutorials" className="text-lg font-medium hover:text-primary p-3 rounded-xl hover:bg-white/10 transition-all block" onClick={closeMenu}>Manage Tutorials</Link>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <Link href="/profile" className="text-lg font-medium hover:text-primary transition-all flex items-center justify-between bg-white/5 hover:bg-white/10 p-3 rounded-xl mt-4" onClick={closeMenu}>
                                     <span>My Profile</span>
                                     <UserIcon className="w-5 h-5" />
                                 </Link>
