@@ -25,27 +25,9 @@ export default function LibraryPage() {
     const fetchLibrary = async () => {
         try {
             const response = await api.get('/users/library');
-            const shelfData = response.data || {};
+            const populatedShelves = response.data || { read: [], currentlyReading: [], wantToRead: [] };
 
-            // Fetch details for shelves
-            const currentlyReadingBooks = await Promise.all((shelfData.currentlyReading || []).map(item =>
-                api.get(`/books/${item.bookId || item}`).then(res => res.data).catch(() => null)
-            ));
-
-            const readBooks = await Promise.all((shelfData.read || []).map(item =>
-                api.get(`/books/${item.bookId || item}`).then(res => res.data).catch(() => null)
-            ));
-
-            const wantToReadBooks = await Promise.all((shelfData.wantToRead || []).map(item =>
-                api.get(`/books/${item.bookId || item}`).then(res => res.data).catch(() => null)
-            ));
-
-            setShelves({
-                currentlyReading: currentlyReadingBooks.filter(Boolean),
-                read: readBooks.filter(Boolean),
-                wantToRead: wantToReadBooks.filter(Boolean)
-            });
-
+            setShelves(populatedShelves);
         } catch (err) {
             console.error('Failed to fetch library:', err);
         } finally {
